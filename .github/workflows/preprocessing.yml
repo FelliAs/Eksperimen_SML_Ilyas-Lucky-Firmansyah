@@ -1,0 +1,42 @@
+name: Automasi Preprocessing Data
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'memory_crisis_raw/**'
+      - 'preprocessing/automate_*.py'
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  run-preprocessing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy scikit-learn
+
+      - name: Jalankan Script Preprocessing
+        run: |
+          cd preprocessing
+          python automate_Ilyas-Lucky-Firmansyah.py --input ../memory_crisis_raw/datasets_raw.csv --output memory_crisis_preprocessing/
+
+      - name: Upload Artifact Hasil Preprocessing
+        uses: actions/upload-artifact@v4
+        with:
+          name: memory_crisis_preprocessing_data
+          path: preprocessing/memory_crisis_preprocessing/
+          retention-days: 7
